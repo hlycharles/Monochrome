@@ -21,17 +21,41 @@ function saveGrayStatus(isActive) {
   chrome.storage.sync.set(items);
 }
 
+/**
+ * Set current tab to grayscale
+ */
+function setCurrentTabGrayscale() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {type: "setGrayscale"});
+  });
+}
+
+/**
+ * Colorize current tab
+ */
+function setCurrentTabColorful() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {type: "setColorful"});
+  });
+}
+
 chrome.browserAction.onClicked.addListener(tab => {
   getGrayStatus(isActive => {
     if (!isActive) {
-      chrome.tabs.executeScript(null, {
-        file: "grayscale.js",
-      });
+      setCurrentTabGrayscale();
     } else {
-      chrome.tabs.executeScript(null, {
-        file: "colorize.js",
-      });
+      setCurrentTabColorful();
     }
     saveGrayStatus(!isActive);
   });
+});
+
+chrome.runtime.onMessage.addListener((request, sender) => {
+  if (request.type === "checkIsActive") {
+    getGrayStatus(isActive => {
+      if (isActive) {
+        setCurrentTabGrayscale();
+      }
+    })
+  }
 });

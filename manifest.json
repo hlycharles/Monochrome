@@ -6,12 +6,12 @@
     "version": "1.0",
   
     "browser_action": {
-      "default_icon": "icon.png",
+      "default_icon": "asset/icon.png",
       "default_title": "Click to change background color"
     },
     "content_scripts": [{
       "matches": ["<all_urls>"],
-      "js": ["grayscale.js"]
+      "js": ["pageLoad.js", "grayscale.js", "colorize.js"]
     }],
     "background": {
       "scripts": ["background.js"],
